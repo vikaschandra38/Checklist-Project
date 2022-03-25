@@ -6,11 +6,16 @@ $(":checkbox").click(function (e) {
   let propObj = {
     id: $(this).prop('id'),
     checked: $(this).prop('checked'),
-    width: $(".progress-bar.bg-success")[0].style.width
+    width: $(this).prop('checked') ? 20 : 0
   }
   if(localStorage.getItem('checkboxlist')){
     let objListCp = JSON.parse(localStorage.getItem('checkboxlist'));
-    objListCp.push(propObj);
+    let fd = objListCp.findIndex((obj) => obj.id == propObj.id);
+    if(fd>=0){
+        objListCp[fd] = propObj;
+    }else{
+        objListCp.push(propObj);
+    }
     localStorage.setItem('checkboxlist', JSON.stringify(objListCp));
   }else{
     localStorage.setItem('checkboxlist', JSON.stringify([propObj]));
@@ -19,8 +24,13 @@ $(":checkbox").click(function (e) {
 
 if(localStorage.getItem('checkboxlist')){
   let objList = JSON.parse(localStorage.getItem('checkboxlist'));
+  let totalWidth = 0;
   objList.forEach((obj, index, arr) => {
     $("#"+ obj.id)[0].checked = obj.checked;
+    totalWidth += obj.width;
   });
-  $(".progress-bar.bg-success")[0].style.width = objList[objList.length - 1].width;
+  $(".progress-bar.bg-success")[0].style.width = totalWidth + '%';
+// let checklistItems = $(":checkbox").length;
+// let checkedItemsCount = $(":checkbox:checked").length;
+// $(".progress-bar.bg-success")[0].style.width = ((checkedItemsCount / checklistItems) * 100) + '%';
 }
